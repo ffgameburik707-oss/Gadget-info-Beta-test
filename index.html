@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gadget Info</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; }
+    header { background:#333; color:white; padding:1rem; text-align:center; }
+    .search-container { margin-top:10px; position:relative; display:inline-block; width:80%; max-width:500px; }
+    .search-container input { padding:8px; border:none; border-radius:5px; width:calc(100% - 70px); }
+    .search-container button { padding:8px 12px; background:#555; color:white; border:none; border-radius:5px; cursor:pointer; width:60px; margin-left:5px; }
+    .search-container button:hover { background:#777; }
+    .suggestions-box { position:absolute; z-index:10; background:white; width:calc(100% - 70px); border:1px solid #ddd; border-top:none; border-radius:0 0 5px 5px; box-shadow:0 4px 8px rgba(0,0,0,.1); max-height:200px; overflow-y:auto; display:none; text-align:left; }
+    .suggestion-item { padding:10px; cursor:pointer; border-bottom:1px solid #eee; }
+    .suggestion-item:hover { background:#f0f0f0; }
+    main { padding:2rem; text-align:center; }
+    .container { max-width:900px; margin:20px auto; padding:20px; background:white; border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,.1); }
+    #phone-specs { display:none; text-align:left; }
+    h2 { color:#222; border-bottom:2px solid #eee; padding-bottom:5px; text-align:left; }
+    .specs-table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+    .specs-table th, .specs-table td { padding:12px; border:1px solid #ddd; text-align:left; }
+    .specs-table th { background:#f2f2f2; width:30%; }
+    .specs-category { font-size:1.2rem; font-weight:bold; background:#e9e9e9; padding:8px; margin-top:15px; border-radius:5px; }
+    footer { padding:2rem 1rem; background:#f4f4f4; color:#333; margin-top:20px; text-align:left; }
+    .random-phones { text-align:left; margin-top:20px; }
+    .random-phones h4 { margin-bottom:10px; }
+    .random-phone-item { padding:8px; background:#e9e9e9; border-radius:5px; margin-bottom:5px; cursor:pointer; }
+    .random-phone-item:hover { background:#dcdcdc; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Gadget Info</h1>
+  <p>Temukan informasi lengkap tentang ponsel favoritmu!</p>
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Cari nama smartphone...">
+    <button id="searchBtn">Cari</button>
+    <div id="suggestionsBox" class="suggestions-box"></div>
+  </div>
+</header>
+
+<main>
+  <div id="phone-specs" class="container"></div>
+</main>
+
+<footer>
+  <p>&copy; 2025 Gadget Info. Hak Cipta Dilindungi.</p>
+</footer>
+
+<script>
+// ===================== DATA HP =====================
+const phoneData = {
+  "samsung galaxy note 20": {
+    name: "Samsung Galaxy Note 20",
+    score: "8.7/10",
+    antutu: 695000,
+    general: [
+      ["Jaringan", "GSM / HSPA / LTE / 5G"],
+      ["Bahan Bodi", "Kaca Gorilla Glass 6 depan & belakang, bingkai aluminium"]
+    ],
+    layar: [
+      ["Tipe", "Dynamic AMOLED 2X, 120Hz"],
+      ["Ukuran", "6.7 inci"],
+      ["Proteksi Layar", "Corning Gorilla Glass Victus"]
+    ],
+    performa: [
+      ["Chipset", "Exynos 990 / Snapdragon 865+ 5G"],
+      ["RAM & Jenis", "8GB LPDDR5"],
+      ["Memori Internal", "256GB UFS 3.0"]
+    ],
+    kamera: [
+      ["Kamera Utama", "12 MP (wide) - OIS"],
+      ["Kamera Telephoto", "64 MP - 3x optical zoom, max 30x digital zoom, OIS"],
+      ["Kamera Ultrawide", "12 MP"],
+      ["Kamera Selfie", "10 MP"],
+      ["Kolaborasi Kamera", "Tidak"]
+    ],
+    fitur: [
+      ["Baterai", "Li-Ion 4300 mAh"],
+      ["Wireless Charging", "Ya, 15W"],
+      ["Fingerprint", "Di bawah layar (ultrasonic)"]
+    ],
+    warna: ["Mystic Bronze", "Mystic Green", "Mystic Gray"]
+  },
+  "xiaomi 15 ultra": {
+    name: "Xiaomi 15 Ultra",
+    score: "9.6/10",
+    antutu: 2800000,
+    general: [
+      ["Jaringan", "GSM / HSPA / LTE / 5G"],
+      ["Bahan Bodi", "Kaca depan, bingkai aluminium"]
+    ],
+    layar: [
+      ["Tipe", "LTPO AMOLED, 120Hz"],
+      ["Ukuran", "6.73 inci"],
+      ["Proteksi Layar", "Corning Gorilla Glass Victus"]
+    ],
+    performa: [
+      ["Chipset", "Snapdragon 8 Elite"],
+      ["RAM & Jenis", "12GB/16GB LPDDR5X"],
+      ["Memori Internal", "256GB/512GB/1TB UFS 4.0"]
+    ],
+    kamera: [
+      ["Kamera Utama", "50 MP (wide) - OIS"],
+      ["Kamera Telephoto", "50 MP - 3x optical zoom, max 100x digital zoom, OIS"],
+      ["Kamera Periskop", "200 MP - OIS"],
+      ["Kamera Ultrawide", "50 MP"],
+      ["Kamera Selfie", "32 MP"],
+      ["Kolaborasi Kamera", "Leica"]
+    ],
+    fitur: [
+      ["Baterai", "Li-Po 5410 mAh"],
+      ["Wireless Charging", "Ya, 50W"],
+      ["Fingerprint", "Ya, di bawah layar (optik)"]
+    ],
+    warna: ["Startrail Blue", "Ceramic White", "Black"]
+  }
+  // Tambah HP lain di sini...
+};
+
+// ===================== FUNGSI =====================
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const suggestionsBox = document.getElementById("suggestionsBox");
+const phoneSpecsDiv = document.getElementById("phone-specs");
+
+function showSuggestions() {
+  const query = searchInput.value.toLowerCase().trim();
+  suggestionsBox.innerHTML = '';
+  if (query.length > 0) {
+    const matches = Object.keys(phoneData).filter(key => key.includes(query));
+    if (matches.length > 0) {
+      matches.forEach(key => {
+        const item = document.createElement("div");
+        item.classList.add("suggestion-item");
+        item.textContent = phoneData[key].name;
+        item.onclick = () => {
+          searchInput.value = phoneData[key].name;
+          searchPhone();
+          suggestionsBox.style.display = "none";
+        };
+        suggestionsBox.appendChild(item);
+      });
+      suggestionsBox.style.display = "block";
+    } else {
+      suggestionsBox.style.display = "none";
+    }
+  } else {
+    suggestionsBox.style.display = "none";
+  }
+}
+
+function generateSpecsTable(title, specs) {
+  let html = `<div class="specs-category">${title}</div><table class="specs-table"><tbody>`;
+  specs.forEach(spec => {
+    html += `<tr><td><b>${spec[0]}</b></td><td>${spec[1]}</td></tr>`;
+  });
+  html += "</tbody></table>";
+  return html;
+}
+
+function displayPhone(phone) {
+  let html = `<h2>${phone.name}</h2>`;
+  html += `<p><b>Skor:</b> ${phone.score} | <b>Antutu:</b> ${phone.antutu.toLocaleString()}</p>`;
+  html += generateSpecsTable("Spesifikasi Umum", phone.general);
+  html += generateSpecsTable("Layar", phone.layar);
+  html += generateSpecsTable("Performa", phone.performa);
+  html += generateSpecsTable("Kamera", phone.kamera);
+  html += generateSpecsTable("Fitur", phone.fitur);
+  html += `<p><b>Warna:</b> ${phone.warna.join(", ")}</p>`;
+  return html;
+}
+
+function searchPhone() {
+  const query = searchInput.value.toLowerCase().trim();
+  const foundKey = Object.keys(phoneData).find(key => key.includes(query));
+  if (foundKey) {
+    phoneSpecsDiv.innerHTML = displayPhone(phoneData[foundKey]);
+    phoneSpecsDiv.style.display = "block";
+  } else {
+    phoneSpecsDiv.innerHTML = `<p style="text-align:center;">Handphone tidak ditemukan.</p>`;
+    phoneSpecsDiv.style.display = "block";
+  }
+}
+
+// ===================== EVENT =====================
+searchInput.addEventListener("input", showSuggestions);
+searchBtn.addEventListener("click", searchPhone);
+</script>
+
+</body>
+</html>
